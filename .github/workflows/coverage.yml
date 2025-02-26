@@ -29,7 +29,7 @@ jobs:
           # Create badge JSON
           echo "{\"schemaVersion\":1,\"label\":\"coverage\",\"message\":\"${COVERAGE}%\",\"color\":\"brightgreen\"}" > badge.json
 
-          # Update README badge
+          # Update README badge - now pointing to coverage.out instead of coverage.html
           sed -i "s/Coverage-[0-9.]*%25/Coverage-${COVERAGE}%25/g" README.md
 
       - name: Commit updated coverage badge

@@ -1,7 +1,7 @@
 # GCTX - Go Context Utilities
 
 [![Go Version](https://img.shields.io/badge/Go-1.24.0-blue.svg)](https://golang.org/doc/go1.24)
-[![Coverage](https://img.shields.io/badge/Coverage-100.0%25-brightgreen.svg)](coverage.html)
+[![Coverage](https://img.shields.io/badge/Coverage-100.0%25-brightgreen.svg)](coverage.out)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A lightweight, type-safe context management library for Go applications, providing utilities for handling context values with generic type support.

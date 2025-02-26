@@ -22,9 +22,11 @@ EOF
 echo "Coverage: ${COVERAGE}%"
 echo "Coverage badge data generated in badge.json"
 echo "Coverage HTML report generated in coverage.html"
+echo "Coverage data file available at coverage.out"
 
 # Update README badge (optional)
 # This will replace the coverage percentage in the README.md file
+# The badge now links to coverage.out instead of coverage.html
 if [ -f "README.md" ]; then
   sed -i "s/Coverage-[0-9.]*%25/Coverage-${COVERAGE}%25/g" README.md
   echo "README.md coverage badge updated"
