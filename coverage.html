@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>hctx: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/idontknowtoobrother/hctx/file_ctx.go (100.0%)</option>
+				
+				<option value="file1">github.com/idontknowtoobrother/hctx/gctx.go (100.0%)</option>
+				
+				<option value="file2">github.com/idontknowtoobrother/hctx/ref_ctx.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package hctx
+
+import (
+        "context"
+        "mime/multipart"
+)
+
+// * File context key
+var fileContextKey = NewGContextType[[]*File]("File-Ctx-Key")
+
+// * File holds file-related information
+type File struct {
+        Content       []byte
+        FileHeader    *multipart.FileHeader
+        AllowedTypes  []string
+        MaxSize       int64
+        ContentType   string
+        FileExtension string
+}
+
+// * ClaimsFile retrieves file context from gin context
+func ClaimsFile(ctx context.Context) (files []*File, found bool) <span class="cov8" title="1">{
+        files, found = Claims(ctx, fileContextKey)
+        if !found </span><span class="cov8" title="1">{
+                return nil, false
+        }</span>
+        <span class="cov8" title="1">return files, true</span>
+}
+
+// * NewFileContext sets file context to gin context
+func NewFileContext(ctx context.Context, files []*File) context.Context <span class="cov8" title="1">{
+        if files == nil </span><span class="cov8" title="1">{
+                return ctx
+        }</span>
+        <span class="cov8" title="1">return NewGContext(ctx, fileContextKey, files)</span>
+}
+
+// * IsAllowedFileType checks if the file extension is allowed
+func (fc *File) IsAllowedFileType() bool <span class="cov8" title="1">{
+        if len(fc.AllowedTypes) == 0 </span><span class="cov8" title="1">{
+                return true
+        }</span>
+        <span class="cov8" title="1">for _, allowedType := range fc.AllowedTypes </span><span class="cov8" title="1">{
+                if allowedType == fc.FileExtension </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+// * ValidateFiles checks if all files in the array are valid
+func ValidateFiles(files []*File) bool <span class="cov8" title="1">{
+        for _, file := range files </span><span class="cov8" title="1">{
+                if !file.IsAllowedFileType() </span><span class="cov8" title="1">{
+                        return false
+                }</span>
+        }
+        <span class="cov8" title="1">return true</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package hctx
+
+import (
+        "context"
+        "net/http"
+)
+
+// * HContext is a generic context key with type parameter
+type HContext[T any] struct {
+        key string
+}
+
+// * NewGContextType creates a new generic context with key and specific type
+func NewGContextType[T any](key string) HContext[T] <span class="cov8" title="1">{
+        return HContext[T]{key: key}
+}</span>
+
+// * Key returns the string key of the context
+func (c HContext[T]) Key() string <span class="cov8" title="1">{
+        return c.key
+}</span>
+
+// * Claims retrieves a value from context with the given key and type
+func Claims[T any](ctx context.Context, gc HContext[T]) (T, bool) <span class="cov8" title="1">{
+        if ctx == nil </span><span class="cov8" title="1">{
+                var zero T
+                return zero, false
+        }</span>
+        <span class="cov8" title="1">value, ok := ctx.Value(gc).(T)
+        return value, ok</span>
+}
+
+// * NewGContext adds a value to context with the given key and type
+func NewGContext[T any](ctx context.Context, key HContext[T], data T) context.Context <span class="cov8" title="1">{
+        return context.WithValue(ctx, key, data)
+}</span>
+
+// * ToHttpRequest adds a value to http request context with the given key and type
+func ToHttpRequest[T any](c *http.Request, key HContext[T], data T) *http.Request <span class="cov8" title="1">{
+        return c.WithContext(NewGContext(c.Context(), key, data))
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package hctx
+
+import (
+        "context"
+        "sync"
+)
+
+var (
+        // Mutex to protect global variables
+        refMutex sync.RWMutex
+
+        // Default values
+        RefIdContext = NewGContextType[string]("X-Correlation-Id")
+        RefHeaderKey = RefIdContext.Key()
+)
+
+// NewRefContext updates the global reference ID context with a custom key
+func NewRefContext(customRefIdKey string) HContext[string] <span class="cov8" title="1">{
+        refMutex.Lock()
+        defer refMutex.Unlock()
+
+        if customRefIdKey == "" </span><span class="cov8" title="1">{
+                RefIdContext = NewGContextType[string]("X-Correlation-Id")
+        }</span> else<span class="cov8" title="1"> {
+                RefIdContext = NewGContextType[string](customRefIdKey)
+        }</span>
+
+        <span class="cov8" title="1">RefHeaderKey = RefIdContext.Key()
+        return RefIdContext</span>
+}
+
+// ClaimsReferenceId safely retrieves the reference ID from context
+func ClaimsReferenceId(ctx context.Context) (string, bool) <span class="cov8" title="1">{
+        if ctx == nil </span><span class="cov8" title="1">{
+                return "", false
+        }</span>
+
+        <span class="cov8" title="1">refMutex.RLock()
+        defer refMutex.RUnlock()
+
+        // Get the reference ID from context
+        return Claims(ctx, RefIdContext)</span>
+}
+
+// NewReferenceIdContext creates a new context with the reference ID
+func NewReferenceIdContext(ctx context.Context, refID string) context.Context <span class="cov8" title="1">{
+        if ctx == nil </span><span class="cov8" title="1">{
+                ctx = context.Background()
+        }</span>
+
+        <span class="cov8" title="1">refMutex.RLock()
+        defer refMutex.RUnlock()
+
+        return NewGContext(ctx, RefIdContext, refID)</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
