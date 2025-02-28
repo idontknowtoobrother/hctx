@@ -88,4 +88,4 @@ The reference ID context utilities are thread-safe, using a mutex to protect glo
 
 ## License
 
-MIT License 
+MIT License

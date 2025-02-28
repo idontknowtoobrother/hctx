@@ -10,7 +10,7 @@ var (
 	refMutex sync.RWMutex
 
 	// Default values
-	RefIdContext = NewGContextType[string]("X-Correlation-Id")
+	RefIdContext = NewHContextType[string]("X-Correlation-Id")
 	RefHeaderKey = RefIdContext.Key()
 )
 
@@ -20,9 +20,9 @@ func NewRefContext(customRefIdKey string) HContext[string] {
 	defer refMutex.Unlock()
 
 	if customRefIdKey == "" {
-		RefIdContext = NewGContextType[string]("X-Correlation-Id")
+		RefIdContext = NewHContextType[string]("X-Correlation-Id")
 	} else {
-		RefIdContext = NewGContextType[string](customRefIdKey)
+		RefIdContext = NewHContextType[string](customRefIdKey)
 	}
 
 	RefHeaderKey = RefIdContext.Key()
@@ -39,7 +39,7 @@ func ClaimsReferenceId(ctx context.Context) (string, bool) {
 	defer refMutex.RUnlock()
 
 	// Get the reference ID from context
-	return Claims(ctx, RefIdContext)
+	return GetFromContext(ctx, RefIdContext)
 }
 
 // NewReferenceIdContext creates a new context with the reference ID
@@ -51,5 +51,5 @@ func NewReferenceIdContext(ctx context.Context, refID string) context.Context {
 	refMutex.RLock()
 	defer refMutex.RUnlock()
 
-	return NewGContext(ctx, RefIdContext, refID)
+	return WithValue(ctx, RefIdContext, refID)
 }
