@@ -1,4 +1,4 @@
-# GCTX - Go Context Utilities
+# HCTX - Go Context Utilities
 
 [![Go Version](https://img.shields.io/badge/Go-1.24.0-blue.svg)](https://golang.org/doc/go1.24)
 [![Coverage](https://img.shields.io/badge/Coverage-100.0%25-brightgreen.svg)](coverage.out)
@@ -25,10 +25,10 @@ go get github.com/idontknowtoobrother/hctx
 
 ```go
 // Create a typed context key
-userCtx := hctx.NewGContextType[User]("user-context")
+userCtx := hctx.NewHContextType[User]("user-context")
 
 // Store a value in context
-ctx = hctx.NewGContext(ctx, userCtx, user)
+ctx = hctx.NewHContext(ctx, userCtx, user)
 
 // Retrieve the value with type safety
 user, found := hctx.Claims(ctx, userCtx)
